@@ -1,0 +1,188 @@
+
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Etch-A-Sketch</title>
+</head>
+
+<body>
+    <h1>Etch-A-Sketch</h1>
+    <div id="container"> </div>
+
+    <div id="options">
+        <div id="colours" class="controlsections">
+            <h3> Colour Selection</h3>
+            <input type="radio" id="black" name="colours" value="black">
+            <label for="black">Black</label><br>
+            <input type="radio" id="white" name="colours" value="white">
+            <label for="white">White</label><br>
+            <input type="radio" id="red" name="colours" value="red">
+            <label for="red">Red</label><br>
+            <input type="radio" name="colours" value="">
+            <label for="other">Other</label>
+            <input type="text" name="other_colour" id="input" />
+        </div>
+
+        <div id="cleaning" class="controlsections">
+            <h3> Clear Canvas</h3>
+            <button id="clear">Clear Canvas</button>
+        </div>
+
+        <div id="controls" class="controlsections">
+            <h3> Controls</h3>
+            <input type="radio" id="hover" name="controlbox" value="hover">Hover (mouseover)</input>
+            <br>
+            <input type="radio" id="precision" name="controlbox" value="precision">Precision (click)</input>
+        </div>
+
+        <div id="resizing">
+            <h3> Resize Canvas </h3>
+            <button id="resize">Resize Canvas</button>
+
+        </div>
+    </div>
+
+
+
+
+
+    <style>
+        h1 {
+            font-size: 40px;
+            text-align: center;
+        }
+
+
+        :root {
+            --grid-side: 1;
+            --grid-width: 8px;
+        }
+
+        #container {
+            display: grid;
+            justify-content: center;
+            grid-gap: 0px;
+            grid-template-rows: repeat(var(--grid-side), var(--grid-width));
+            grid-template-columns: repeat(var(--grid-side), var(--grid-width));
+        }
+
+        .grid-item {
+            padding: 0px;
+            border: 1px solid black;
+        }
+
+        #options {
+            display: flex;
+        }
+
+        .controlsections {
+            padding-right: 30px;
+        }
+    </style>
+
+
+
+    <script>
+
+        /*
+        * KNOWN BUGS
+        * 1. Resize canvas doesn't work more than once.
+        * 2. Controls aren't activated yet.
+        */
+
+        const container = document.getElementById("container");
+        let controlChoice = 'mouseover';
+
+
+
+        function drawCanvas(sideLength) {
+            container.style.setProperty('--grid-side', sideLength);
+            container.style.setProperty('--grid-width', 750 / sideLength + "px")
+            for (c = 0; c < (sideLength * sideLength); c++) {
+                let cell = document.createElement("div");
+                container.appendChild(cell).className = "grid-item";
+            };
+        };
+
+        function activateEtching() {
+            let cells = document.querySelectorAll(".grid-item");
+            //const cells = document.sel("grid-item");
+
+            let controlBox = document.getElementsByName("controlbox");
+
+            if (controlBox[1].checked) {
+                controlChoice = "click";
+            }
+
+            let coloursBox = document.getElementsByName("colours");
+            let chosenColour = "black";
+
+
+            cells.forEach((cell) => {
+
+                cell.addEventListener(controlChoice, () => {
+                    if (coloursBox[0].checked) {
+                        chosenColour = "black";
+                    }
+                    if (coloursBox[1].checked) {
+                        chosenColour = "white";
+                    }
+                    if (coloursBox[2].checked) {
+                        chosenColour = "red";
+                    }
+                    if (coloursBox[3].checked) {
+                        chosenColour = document.getElementById("input").value;
+                    }
+                    cell.style.backgroundColor = chosenColour;
+                });
+            });
+
+            let clearButton = document.getElementById("clear");
+            clearButton.addEventListener('click', () => {
+                cells.forEach((cell) => {
+                    cell.style.backgroundColor = "white";
+
+                });
+            });
+        
+
+        
+
+
+
+        let resizeButton = document.getElementById("resize");
+        resizeButton.addEventListener('click', () => {
+            let newSize = parseInt(window.prompt("What should the new size be? (max 64, min 20)"));
+
+
+
+            if (Number.isInteger(newSize) == false) {
+                alert("That's not a number.");
+            } else if (newSize < 20) {
+                alert("That number is too small.");
+            } else if (newSize > 64) {
+                alert("That number is too big.");
+            } else {
+                cells.forEach((cell) => {
+                    cell.remove();
+                });
+                drawCanvas(newSize);
+                activateEtching();
+            }
+        });
+    }
+        drawCanvas(64);
+        activateEtching();
+
+
+
+
+
+
+    </script>
+</body>
+
+</html>
